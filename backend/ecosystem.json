@@ -1,0 +1,10 @@
+{
+    "apps": [
+        {
+            "name": "backend",
+            "script": "./app.js",
+            "watch": false,
+            "ignore_watch": ["/public", "public", "public/image"]
+        }
+    ]
+}

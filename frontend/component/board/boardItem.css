@@ -1,0 +1,105 @@
+.boardItem {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    padding: 16px 0;
+    margin-bottom: 0px; /* 아이템 간격을 위한 마진 */
+    border: 0.5px solid rgba(241, 241, 243, 0.3);
+    border-radius: 30px;
+    background-color: rgba(136, 142, 84, 0.95);
+    transform: translateY(-100%); 
+    animation: slideDown 0.5s forwards;
+    cursor: pointer;
+}
+
+.boardItem:last-child {
+    margin-bottom: 0; /* 마지막 아이템에 대한 마진 제거 */
+}
+@keyframes slideDown {
+    0% {
+        transform: translateY(-100%);
+        box-shadow: 0 0 0px 0px rgba(0, 0, 0, 0); /* 초기 그림자 설정 */
+    }
+    100% {
+        transform: translateY(0);
+        box-shadow: 
+            -10px 0 20px -10px rgba(0, 0, 0, 0.5), /* 왼쪽 그림자 */
+            10px 0 20px -10px rgba(0, 0, 0, 0.5); /* 오른쪽 그림자 */
+    }
+}
+
+.boardItem .date {
+    align-self: flex-end;
+
+    font-size: 12px;
+    line-height: 17px;
+    margin-left: 60px;
+    color: rgb(80, 80, 80);
+    letter-spacing: -0.02em;
+    padding: 0 20px;
+}
+
+.boardItem .title {
+    font-size: 24px;
+    font-weight: bold;
+    line-height: 32px;
+
+    color: #ffffff;
+    letter-spacing: -0.02em;
+
+    margin-bottom: 24px;
+    padding: 0 20px;
+}
+
+.boardItem .info {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    column-gap: 16px;
+    padding-bottom: 16px;
+    padding-left: 20px;
+    border-bottom: 1px solid rgb(176, 176, 176, 0.5);
+}
+
+.boardItem .info h3,
+.boardItem .info b {
+    font-size: 15px;
+    font-weight: 200;
+    line-height: 17px;
+    letter-spacing: -0.02em;
+
+    color: rgb(255, 255, 255);
+}
+
+.boardItem .writerInfo {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    column-gap: 16px;
+    padding: 0 20px;
+}
+
+.boardItem .img {
+    width: 32px;
+    height: 32px;
+
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.boardItem .img img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+.boardItem .writer {
+    font-size: 14px;
+    line-height: 22px;
+    letter-spacing: -0.02em;
+
+    color: rgb(242, 255, 142);
+}

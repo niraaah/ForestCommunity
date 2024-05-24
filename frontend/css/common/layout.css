@@ -1,0 +1,90 @@
+@import url('../../component/dialog/dialog.css');
+
+@font-face {
+    font-family: "Ssukssuk";
+    src: url("../../public/fonts/Cafe24Ssukssuk-v2.0.ttf") format("truetype");
+    font-weight: normal;
+}
+@font-face {
+    font-family: "Ssurround";
+    src: url("../../public/fonts/Cafe24Ssurround-v2.0.ttf") format("truetype");
+    font-weight: normal;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+
+    text-decoration: none;
+    box-sizing: border-box;
+    font-family: 'Ssukssuk';
+}
+body {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0 calc(50vw - 212.5px); /* 약 290px */
+    border: 0px solid rgba(140, 255, 0, 0);
+    background-color: #232323;
+    /* overflow: hidden; */
+}
+
+.wrap {
+    width: 100%;
+    height: 100%;
+    padding-top: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center-top;
+    background-color: rgba(169, 179, 136, 0.95);
+    border-radius: 30px;
+    opacity: 100%; 
+    transform: translateY(-100%); 
+    animation: slideDown 0.5s forwards;
+}
+
+@keyframes slideDown {
+    0% {
+        transform: translateY(-100%);
+        box-shadow: 0 0 0px 0px rgba(0, 0, 0, 0); /* 초기 그림자 설정 */
+    }
+    100% {
+        transform: translateY(0);
+        box-shadow: 
+            -10px 0 20px -10px rgba(0, 0, 0, 0.5), /* 왼쪽 그림자 */
+            10px 0 20px -10px rgba(0, 0, 0, 0.5); /* 오른쪽 그림자 */
+    }
+}
+
+
+.background {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    background: url('/public/background/wood-final.png');
+    background-repeat: no-repeat;
+    background-size: cover; /* 이미지가 화면을 덮으면서 비율을 유지하도록 변경 */
+    background-position: center; /* 이미지를 화면 중앙에 위치 */
+    background-attachment: fixed; /* 스크롤해도 이미지가 고정되도록 설정 */
+}
+
+.background::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /*background: rgba(0, 0, 0, 0.5);*/
+}
+.Ssukssuk-regular {
+    font-family: "Ssukssuk", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}

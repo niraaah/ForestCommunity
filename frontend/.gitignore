@@ -1,0 +1,13 @@
+node_modules/
+
+*.log
+
+.DS_Store
+
+web_project/frontend/.env
+
+web_project/backend/.env
+
+.idea/
+
+web_project/backend/public/image/
