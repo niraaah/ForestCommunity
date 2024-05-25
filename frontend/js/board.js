@@ -213,18 +213,29 @@ const getAndSetLikes = async postId => {
 };
 
 
-const handleLikeButtonClick = async postId => {
+const handleLikeButtonClick = async (postId) => {
     try {
         console.log(`Handling like button click for postId: ${postId}`);
-        await updateLikes(postId);
-        await getAndSetLikes(postId); // 좋아요 수를 업데이트한 후 다시 가져와서 설정
+        const response = await updateLike(postId);
+        if (response.ok) {
+            const likeData = await response.json();
+            console.log('Updated Like data:', likeData);
+            const likeCountElement = document.querySelector('.likeCount h3');
+            if (likeData.data.like.includes('K') || likeData.data.like.includes('M')) {
+                likeCountElement.textContent = likeData.data.like;
+            } else {
+                likeCountElement.textContent = parseInt(likeData.data.like, 10).toLocaleString();
+            }
+        } else {
+            throw new Error('좋아요 증가에 실패하였습니다.');
+        }
     } catch (error) {
         console.error('Error handling like button click:', error);
         Dialog('좋아요 실패', '좋아요를 처리하는데 실패하였습니다.');
     }
 };
 
-const initLikeButton = postId => {
+const initLikeButton = (postId) => {
     const likeButton = document.getElementById('likeBtn');
     likeButton.addEventListener('click', () => handleLikeButtonClick(postId));
 };
@@ -239,6 +250,7 @@ function setupLikeButton(initialLikeCount) {
 
     likeBtn.addEventListener('click', () => {
         likeCount++;
+        console.log(likeCount);
         likeCountElement.textContent = likeCount;
         // 서버에 like 수 업데이트를 요청하는 코드 추가 가능
     });
@@ -282,7 +294,8 @@ const init = async () => {
         getBoardComment(pageId).then(data => setBoardComment(data, myInfo));
 
         const likeCount = pageData.like || 0; // 서버에서 가져온 like 수
-            setupLikeButton(likeCount);
+        setupLikeButton(likeCount);
+        initLikeButton(pageId);
     } catch (error) {
         console.error(error);
     }

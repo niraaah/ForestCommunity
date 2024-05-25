@@ -305,10 +305,12 @@ export const softDeletePost = async (request, response) => {
 // 좋아요 증가
 export const updateLike = async (request, response) => {
     try {
+        console.log('Received like update request:', request.params.post_id, request.headers.userId);
         const postId = request.params.post_id;
         const userId = request.headers.userId;
 
         if (!postId || !userId) {
+            console.log('Invalid postId or userId');
             return response.status(400).json({
                 status: 400,
                 message: 'invalid_post_id_or_user_id',
@@ -323,6 +325,7 @@ export const updateLike = async (request, response) => {
         const results = await postModel.updateLikes(requestData);
 
         if (!results) {
+            console.log('Failed to increase like');
             return response.status(500).json({
                 status: 500,
                 message: 'failed_to_increase_like',
@@ -330,13 +333,14 @@ export const updateLike = async (request, response) => {
             });
         }
 
+        console.log('Like update success:', results);
         return response.status(200).json({
             status: 200,
             message: 'increase_like_success',
             data: results,
         });
     } catch (error) {
-        console.error(error);
+        console.error('Error in updateLike controller:', error);
         return response.status(500).json({
             status: 500,
             message: 'internal_server_error',

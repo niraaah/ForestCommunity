@@ -7,7 +7,7 @@ export const createPost = boardData => {
         headers: {
             'Content-Type': 'application/json',
             session: getCookie('session'),
-            userid: getCookie('userId'),
+            userId: getCookie('userId'),
         },
     });
     return result;
@@ -20,7 +20,7 @@ export const updatePost = (postId, boardData) => {
         headers: {
             'Content-Type': 'application/json',
             session: getCookie('session'),
-            userid: getCookie('userId'),
+            userId: getCookie('userId'),
         },
     });
 
@@ -41,7 +41,7 @@ export const getBoardItem = postId => {
         method: 'GET',
         headers: {
             session: getCookie('session'),
-            userid: getCookie('userId'),
+            userId: getCookie('userId'),
         },
         noCORS: true,
     });
