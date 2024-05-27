@@ -15,6 +15,11 @@ router.post('/posts/:post_id/likes', isLoggedIn, (req, res, next) => {
     next();
 }, postController.updateLike);
 
+router.post('/posts/:post_id/likes', isLoggedIn, (req, res, next) => {
+    console.log(`POST /posts/${req.params.post_id}/likes`);
+    next();
+}, postController.updateLike);
+
 router.get('/posts/:post_id/likes', isLoggedIn, (req, res, next) => {
     console.log(`GET /posts/${req.params.post_id}/likes`);
     next();

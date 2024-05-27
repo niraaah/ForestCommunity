@@ -47,6 +47,7 @@ export const getComments = async postId => {
 };
 
 export const getLikes = async postId => {
+    console.log(`GET `)
     const result = await fetch(`${getServerUrl()}/posts/${postId}/likes`, {
         method: 'GET',
         headers: {
@@ -64,7 +65,19 @@ export const updateLike = async postId => {
         const session = getCookie('session');
         const userId = getCookie('userId');
 
-        // 디버깅 정보 추가
+        // Add debug logs to check the values
+        console.log(`getCookie('session'): ${session}`);
+        console.log(`getCookie('userId'): ${userId}`);
+        console.log(`postId: ${postId}`);
+
+        if (!userId) {
+            throw new Error('User ID is undefined. Please check if the userId cookie is set properly.');
+        }
+
+        if (!postId) {
+            throw new Error('Post ID is invalid or undefined. Please check the postId value.');
+        }
+
         console.log(`Sending like update request for postId: ${postId}`);
         console.log(`Request URL: ${serverUrl}/posts/${postId}/likes`);
         console.log(`Session: ${session}, User ID: ${userId}`);
@@ -76,13 +89,10 @@ export const updateLike = async postId => {
                 'session': session,
                 'userId': userId,
             },
-            body: JSON.stringify({ postId: postId, userId: userId }) // 요청 본문에 데이터 추가
         });
 
-        // 응답 상태 코드 확인
         console.log(`Response status: ${result.status}`);
         
-        // 응답이 성공적이지 않은 경우 오류 처리
         if (!result.ok) {
             const errorData = await result.json();
             console.error('Response error data:', errorData);
@@ -97,5 +107,3 @@ export const updateLike = async postId => {
         throw error;
     }
 };
-
-
