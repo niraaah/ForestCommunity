@@ -307,18 +307,18 @@ export const softDeletePost = async (request, response) => {
 };
 
 
-const updateLike = (req, res) => {
-    const { userId } = req.headers;
-    const { postId } = req.body;
+const updateLike = async (req, res) => {
+    const { userId } = req.headers.userId;
+    const { postId } = req.params.post_id;
 
     console.log(`Received like update request: ${postId} ${userId}`);
 
     if (!postId) {
-        console.log('Invalid postId or userId');
+        console.log('Invalid postId');
         return res.status(400).json({ status: 400, message: 'invalid_post_id', data: null });
     }
     if (!userId) {
-        console.log('Invalid postId or userId');
+        console.log('Invalid userId');
         return res.status(400).json({ status: 400, message: 'invalid_user_id', data: null });
     }
 
