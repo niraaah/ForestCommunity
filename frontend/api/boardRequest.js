@@ -65,22 +65,21 @@ export const updateLike = async postId => {
         const session = getCookie('session');
         const userId = getCookie('userId');
 
-        // Add debug logs to check the values
+        // 디버깅 로그 추가
         console.log(`getCookie('session'): ${session}`);
         console.log(`getCookie('userId'): ${userId}`);
         console.log(`postId: ${postId}`);
 
         if (!userId) {
-            throw new Error('User ID is undefined. Please check if the userId cookie is set properly.');
+            throw new Error('User ID가 undefined입니다. userId 쿠키가 제대로 설정되어 있는지 확인해주세요.');
         }
 
         if (!postId) {
-            throw new Error('Post ID is invalid or undefined. Please check the postId value.');
+            throw new Error('Post ID가 유효하지 않거나 undefined입니다. postId 값을 확인해주세요.');
         }
 
-        console.log(`Sending like update request for postId: ${postId}`);
-        console.log(`Request URL: ${serverUrl}/posts/${postId}/likes`);
-        console.log(`Session: ${session}, User ID: ${userId}`);
+        console.log(`postId: ${postId}`);
+        console.log(`userId: ${userId}`);
 
         const result = await fetch(`${serverUrl}/posts/${postId}/likes`, {
             method: 'POST',
@@ -89,21 +88,23 @@ export const updateLike = async postId => {
                 'session': session,
                 'userId': userId,
             },
+            body: JSON.stringify({ postId}),
+            noCORS: true,
         });
 
         console.log(`Response status: ${result.status}`);
-        
+
         if (!result.ok) {
             const errorData = await result.json();
             console.error('Response error data:', errorData);
-            throw new Error('Failed to update like');
+            throw new Error('좋아요 업데이트 실패');
         }
 
         const data = await result.json();
         console.log('Response data:', data);
         return data;
     } catch (error) {
-        console.error('Error in updateLike:', error);
+        console.error('updateLike에서 오류 발생:', error);
         throw error;
     }
 };

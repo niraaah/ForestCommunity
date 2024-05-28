@@ -1,3 +1,4 @@
+// database/index.js
 import mysql from 'mysql2/promise';
 
 const config = {
@@ -15,39 +16,20 @@ const pool = mysql.createPool(config);
 
 /* 쿼리 함수 */
 const query = async (queryString, response) => {
-    console.log(queryString);
+    console.log('Executing query:', queryString);
     try {
         const connection = await pool.getConnection(async conn => conn);
         try {
-            // 트랜잭션 시작
-            // await connection.beginTransaction(); // 트랜잭션 사용 시
-
             const [rows] = await connection.query(queryString);
-
-            // 트랜잭션 커밋
-            // await connection.commit(); // 트랜잭션 사용 시
-
-            // 사용 완료된 커넥션 반환
             connection.release();
-
             return rows;
         } catch (error) {
-            // 트랜잭션 롤백
-            // 트랜잭션 사용 시
-            // await connection.rollback();
-
-            console.error('Query Error');
-            console.error(error);
-
-            // 에러 발생 시 커넥션 반환
+            console.error('Query Error:', error);
             connection.release();
-
             return response.status(500).json({ code: 'Query Error' });
         }
     } catch (error) {
-        console.error('DB Error');
-        console.error(error);
-
+        console.error('DB Connection Error:', error);
         return response.status(500).json({ code: 'DB Error' });
     }
 };

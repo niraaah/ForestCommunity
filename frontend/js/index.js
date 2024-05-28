@@ -1,3 +1,4 @@
+// index.js
 import BoardItem from '../component/board/boardItem.js';
 import Header from '../component/header/header.js';
 import { authCheck, getServerUrl, prependChild } from '../utils/function.js';
@@ -6,18 +7,27 @@ import { getPosts } from '../api/indexRequest.js';
 const DEFAULT_PROFILE_IMAGE = '/public/image/profile/default.jpg';
 const HTTP_NOT_AUTHORIZED = 401;
 const SCROLL_THRESHOLD = 0.9;
-const INITIAL_OFFSET = 5;
+const INITIAL_OFFSET = 0;
 const ITEMS_PER_LOAD = 5;
 
-// getBoardItem 함수
-const getBoardItem = async (offset = 0, limit = 5) => {
-    const response = await getPosts(offset, limit);
-    if (!response.ok) {
-        throw new Error('Failed to load post list.');
-    }
+let currentSortBy = 'dateDesc'; // Default sort by date descending
+let offset = INITIAL_OFFSET;
+let isEnd = false;
+let isProcessing = false;
 
-    const data = await response.json();
-    return data.data;
+const getBoardItem = async (offset = 0, limit = 5, sortBy = 'dateDesc') => {
+    console.log(`getBoardItem called with offset: ${offset}, limit: ${limit}, sortBy: ${sortBy}`);
+    try {
+        const response = await getPosts(offset, limit, sortBy);
+        if (!response || !response.data) {
+            throw new Error('Failed to load post list.');
+        }
+
+        return response.data;
+    } catch (error) {
+        console.error('Error in getBoardItem:', error);
+        throw error;
+    }
 };
 
 const setBoardItem = boardData => {
@@ -41,12 +51,15 @@ const setBoardItem = boardData => {
     }
 };
 
-// 스크롤 이벤트 추가
-const addInfinityScrollEvent = () => {
-    let offset = INITIAL_OFFSET,
-        isEnd = false,
-        isProcessing = false;
 
+const clearBoardItems = () => {
+    const boardList = document.querySelector('.boardList');
+    if (boardList) {
+        boardList.innerHTML = '';
+    }
+};
+
+const addInfinityScrollEvent = () => {
     window.addEventListener('scroll', async () => {
         const hasScrolledToThreshold =
             window.scrollY + window.innerHeight >=
@@ -55,7 +68,7 @@ const addInfinityScrollEvent = () => {
             isProcessing = true;
 
             try {
-                const newItems = await getBoardItem(offset, ITEMS_PER_LOAD);
+                const newItems = await getBoardItem(offset, ITEMS_PER_LOAD, currentSortBy);
                 if (!newItems || newItems.length === 0) {
                     isEnd = true;
                 } else {
@@ -88,10 +101,22 @@ const init = async () => {
             Header('모두의 숲속 이야기', 0, fullProfileImagePath),
         );
 
-        const boardList = await getBoardItem();
+        const boardList = await getBoardItem(0, ITEMS_PER_LOAD, currentSortBy);
         setBoardItem(boardList);
 
         addInfinityScrollEvent();
+
+        const sortByElement = document.getElementById('sort-by');
+        sortByElement.addEventListener('change', async (event) => {
+            currentSortBy = event.target.value;
+            console.log(`Sort criteria changed to: ${currentSortBy}`);
+            clearBoardItems(); // Clear existing items
+            offset = INITIAL_OFFSET; // Reset offset
+            isEnd = false; // Reset end flag
+            isProcessing = false; // Reset processing flag
+            const sortedBoardList = await getBoardItem(0, ITEMS_PER_LOAD, currentSortBy);
+            setBoardItem(sortedBoardList);
+        });
     } catch (error) {
         console.error('Initialization failed:', error);
     }

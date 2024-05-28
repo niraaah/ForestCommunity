@@ -68,7 +68,35 @@ export const updateLikes = async (requestData) => {
 
 // 게시글 목록 조회
 export const getPosts = async (requestData, response) => {
-    const { offset, limit } = requestData;
+    const { offset, limit, sortBy } = requestData;
+
+    let sortField;
+    let sortOrder;
+
+    switch (sortBy) {
+        case 'dateAsc':
+            sortField = 'post_table.created_at';
+            sortOrder = 'ASC';
+            break;
+        case 'dateDesc':
+            sortField = 'post_table.created_at';
+            sortOrder = 'DESC';
+            break;
+        case 'views':
+            sortField = 'post_table.hits';
+            sortOrder = 'DESC';
+            break;
+        case 'likes':
+            sortField = 'post_table.`like`';
+            sortOrder = 'DESC';
+            break;
+        default:
+            sortField = 'post_table.created_at';
+            sortOrder = 'DESC';
+    }
+
+    console.log(`sortField = ${sortField} sortOrder = ${sortOrder}`);
+
     const sql = `
     SELECT
         post_table.post_id,
@@ -97,10 +125,10 @@ export const getPosts = async (requestData, response) => {
         END as hits,
         COALESCE(file_table.file_path, '/public/image/profile/default.jpg') AS profileImagePath
     FROM post_table
-            LEFT JOIN user_table ON post_table.user_id = user_table.user_id
-            LEFT JOIN file_table ON user_table.file_id = file_table.file_id
+        LEFT JOIN user_table ON post_table.user_id = user_table.user_id
+        LEFT JOIN file_table ON user_table.file_id = file_table.file_id
     WHERE post_table.deleted_at IS NULL
-    ORDER BY post_table.created_at DESC
+    ORDER BY ${sortField} ${sortOrder}
     LIMIT ${limit} OFFSET ${offset};
     `;
     const results = await dbConnect.query(sql, response);
@@ -108,6 +136,7 @@ export const getPosts = async (requestData, response) => {
     if (!results) return null;
     return results;
 };
+
 
 // 게시글 상세 조회
 export const getPost = async (requestData, response) => {

@@ -127,30 +127,35 @@ export const uploadFile = async (request, response) => {
     }
 };
 
-// 게시글 목록 조회
 export const getPosts = async (request, response) => {
     try {
-        if (!request.query.offset || !request.query.limit)
+        const { offset, limit, sortBy } = request.query;
+
+        if (!offset || !limit) {
             return response.status(400).json({
                 status: 400,
                 message: 'invalid_offset_or_limit',
                 data: null,
             });
-
-        const { offset, limit } = request.query;
+        }
 
         const requestData = {
-            offset,
-            limit,
+            offset: Number(offset),
+            limit: Number(limit),
+            sortBy: sortBy || 'dateDesc', // Default to 'dateDesc' if sortBy is not provided
         };
+
+        console.log(`Request data: offset=${requestData.offset}, limit=${requestData.limit}, sortBy=${requestData.sortBy}`);
+
         const results = await postModel.getPosts(requestData, response);
 
-        if (!results || results === null)
+        if (!results || results.length === 0) {
             return response.status(404).json({
                 status: 404,
                 message: 'not_a_single_post',
                 data: null,
             });
+        }
 
         return response.status(200).json({
             status: 200,
@@ -309,14 +314,23 @@ export const updateLike = async (request, response) => {
         const postId = request.params.post_id;
         const userId = request.headers.userId;
 
-        if (!postId || !userId) {
-            console.log('Invalid postId or userId');
+        if (!postId) {
+            console.log('Invalid postId');
             return response.status(400).json({
                 status: 400,
-                message: 'invalid_post_id_or_user_id',
+                message: 'invalid_post_id',
                 data: null,
             });
         }
+        if (!userId) {
+            console.log('Invalid userId');
+            return response.status(400).json({
+                status: 400,
+                message: 'invalid_user_id',
+                data: null,
+            });
+        }
+
 
         const requestData = {
             postId: mysql.escape(postId),
@@ -389,4 +403,3 @@ export const getLikes = async (request, response) => {
         });
     }
 };
-

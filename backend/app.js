@@ -26,7 +26,7 @@ app.use(
     }),
 );
 
-// Routes
+// Route
 app.use('/', route);
 
 // 404 응답
