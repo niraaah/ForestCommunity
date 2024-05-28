@@ -68,6 +68,8 @@ export const updateLikes = async (requestData) => {
 
 // 게시글 목록 조회
 export const getPosts = async (requestData, response) => {
+    console.log('getPosts called with requestData:', requestData);
+    
     const { offset, limit, sortBy } = requestData;
 
     let sortField;
@@ -95,7 +97,7 @@ export const getPosts = async (requestData, response) => {
             sortOrder = 'DESC';
     }
 
-    console.log(`sortField = ${sortField} sortOrder = ${sortOrder}`);
+    console.log(`sortField = ${sortField}, sortOrder = ${sortOrder}`);
 
     const sql = `
     SELECT
@@ -131,9 +133,17 @@ export const getPosts = async (requestData, response) => {
     ORDER BY ${sortField} ${sortOrder}
     LIMIT ${limit} OFFSET ${offset};
     `;
+
+    console.log('Executing SQL:', sql);
+
     const results = await dbConnect.query(sql, response);
 
-    if (!results) return null;
+    console.log('SQL Query Results:', results);
+
+    if (!results) {
+        console.error('No results returned from query');
+        return null;
+    }
     return results;
 };
 
