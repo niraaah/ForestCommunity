@@ -307,9 +307,9 @@ export const softDeletePost = async (request, response) => {
 };
 
 
-const updateLike = async (req, res) => {
+export const updateLike = async (req, res) => {
     const { userId } = req.headers.userId;
-    const { postId } = req.params.post_id;
+    const { postId } = req.params.postId;
 
     console.log(`Received like update request: ${postId} ${userId}`);
 
