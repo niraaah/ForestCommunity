@@ -21,7 +21,7 @@ export const getLikes = async (requestData) => {
 
 // 좋아요 증가
 export const updateLikes = async (requestData) => {
-    const { postId } = requestData;
+    const { postId, userId } = requestData;
     console.log(`postModel.js updateLikes의 requestData: ${requestData}`);
     const connection = await dbConnect.getConnection();
 
@@ -32,11 +32,11 @@ export const updateLikes = async (requestData) => {
         const updatePostSql = `
         UPDATE post_table
         SET \`like\` = \`like\` + 1
-        WHERE post_id = ${postId};
+        WHERE post_id = ?;
         `;
         console.log('Executing query:', updatePostSql);
-        const updatePostResults = await connection.query(updatePostSql);
-        if (!updatePostResults) throw new Error('Failed to update likes');
+        const [updatePostResults] = await connection.query(updatePostSql, [postId]);
+        if (updatePostResults.affectedRows === 0) throw new Error('Failed to update likes');
         console.log('Like update results:', updatePostResults);
 
         const selectLikeSql = `
@@ -47,11 +47,11 @@ export const updateLikes = async (requestData) => {
                 ELSE \`like\`
             END AS \`like\`
         FROM post_table
-        WHERE post_id = ${postId};
+        WHERE post_id = ?;
         `;
         console.log('Executing query:', selectLikeSql);
-        const [selectLikeResult] = await connection.query(selectLikeSql);
-        if (!selectLikeResult) throw new Error('Failed to select likes');
+        const [selectLikeResult] = await connection.query(selectLikeSql, [postId]);
+        if (selectLikeResult.length === 0) throw new Error('Failed to select likes');
         console.log('Selected like results:', selectLikeResult);
 
         await connection.commit();

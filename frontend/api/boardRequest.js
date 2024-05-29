@@ -94,7 +94,7 @@ export const updateLike = async postId => {
         });
 
         console.log(`Response status: ${result.status}`);
-
+        console.log(`result.ok =${result.ok}`);
         if (!result.ok) {
             const errorData = await result.json();
             console.error('Response error data:', errorData);

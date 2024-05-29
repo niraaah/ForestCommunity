@@ -308,8 +308,8 @@ export const softDeletePost = async (request, response) => {
 
 
 export const updateLike = async (req, res) => {
-    const { userId } = req.headers.userId;
-    const { postId } = req.params.postId;
+    const userId = req.headers.userid;
+    const postId = req.params.post_id;
 
     console.log(`Received like update request: ${postId} ${userId}`);
 
@@ -317,13 +317,14 @@ export const updateLike = async (req, res) => {
         console.log('Invalid postId');
         return res.status(400).json({ status: 400, message: 'invalid_post_id', data: null });
     }
+
     if (!userId) {
         console.log('Invalid userId');
         return res.status(400).json({ status: 400, message: 'invalid_user_id', data: null });
     }
-
+    console.log('userid와 post_id는 맞아요')
     // 실제 좋아요 업데이트 로직
-    return res.status(200).json({ status: 200, message: 'Like updated successfully', data: null });
+    return res.status(200).json({ status: 200, message: 'Like updated successfully', data: { like : getLikes( postId ) } });
 };
 
 

@@ -172,87 +172,81 @@ const inputComment = async () => {
 const updateLikes = async postId => {
     try {
         console.log(`Updating likes for postId: ${postId}`);
-        const likeCountElement = document.querySelector('.likeCount h3');
         const response = await updateLike(postId);
-        if (response.ok) {
-            const data = await response.json();
-            console.log('Like data:', data);
-            if (data.like.includes('K') || data.like.includes('M')) {
-                likeCountElement.textContent = data.like;
-            } else {
-                likeCountElement.textContent = parseInt(data.like, 10).toLocaleString();
-            }
+        console.log(`Response data:`, response);
+
+        // 응답 데이터가 올바른지 확인
+        if (response && typeof response === 'object' && response.status === HTTP_OK) {
+            console.log('Updated like data:', response);
+            return response.data;  // 좋아요 데이터를 반환
         } else {
-            throw new Error('좋아요 정보를 가져오는데 실패하였습니다.');
+            throw new Error('Invalid response format');
         }
     } catch (error) {
-        console.error('Error updating likes:', error);
+        console.error('좋아요 업데이트 중 오류:', error);
+        throw error;
     }
 };
 
 const getAndSetLikes = async postId => {
     try {
         console.log(`Getting likes for postId: ${postId}`);
-        const likeCountElement = document.querySelector('.likeCount h3');
         const response = await getLikes(postId);
-        console.log(`Response from server: ${response.status}`);
-        if (response.ok) {
-            const data = await response.json();
-            console.log('Like data:', data);
-            if (data.like.includes('K') || data.like.includes('M')) {
-                likeCountElement.textContent = data.like;
-            } else {
-                likeCountElement.textContent = parseInt(data.like, 10).toLocaleString();
-            }
-        } else {
+
+        if (!response.ok) {
             throw new Error('좋아요 정보를 가져오는데 실패하였습니다.');
         }
+        const data = await response.json();
+        console.log('Like data:', data);
+        const likeCountElement = document.querySelector('.likeCount h3');
+        if (data.like !== undefined && data.like !== null) {
+            likeCountElement.textContent = data.like.toLocaleString();
+        }
+        return data;
     } catch (error) {
-        console.error('Error getting likes:', error);
+        console.error('좋아요 정보를 가져오는 중 오류:', error);
+        throw error;
     }
 };
 
-
-const handleLikeButtonClick = async (postId) => {
+const handleLikeButtonClick = async postId => {
     try {
         console.log(`Handling like button click for postId: ${postId}`);
-        const response = await updateLike(postId);
-        if (response.ok) {
-            const likeData = await response.json();
-            console.log('Updated Like data:', likeData);
-            const likeCountElement = document.querySelector('.likeCount h3');
-            if (likeData.data.like.includes('K') || likeData.data.like.includes('M')) {
-                likeCountElement.textContent = likeData.data.like;
-            } else {
-                likeCountElement.textContent = parseInt(likeData.data.like, 10).toLocaleString();
-            }
-        } else {
-            throw new Error('좋아요 증가에 실패하였습니다.');
+        const likeData = await updateLikes(postId);
+        const likeCountElement = document.querySelector('.likeCount h3');
+        if (likeData && likeData.like !== undefined && likeData.like !== null) {
+            likeCountElement.textContent = likeData.like.toString();
         }
     } catch (error) {
-        console.error('Error handling like button click:', error);
+        console.error('좋아요 버튼 클릭 처리 중 오류:', error);
         Dialog('좋아요 실패', '좋아요를 처리하는데 실패하였습니다.');
     }
 };
 
-const initLikeButton = (postId) => {
+
+const initLikeButton = postId => {
     const likeButton = document.getElementById('likeBtn');
     likeButton.addEventListener('click', () => handleLikeButtonClick(postId));
 };
 
- // like 버튼 클릭 이벤트 처리
-function setupLikeButton(initialLikeCount) {
+
+function setupLikeButton(initialLikeCount, postId) {
     const likeBtn = document.getElementById('likeBtn');
     const likeCountElement = document.querySelector('.likeCount h3');
-    let likeCount = initialLikeCount;
+    if (initialLikeCount !== undefined && initialLikeCount !== null) {
+        likeCountElement.textContent = initialLikeCount.toString();
+    }
 
-    likeCountElement.textContent = likeCount;
-
-    likeBtn.addEventListener('click', () => {
-        likeCount++;
-        console.log(likeCount);
-        likeCountElement.textContent = likeCount;
-        // 서버에 like 수 업데이트를 요청하는 코드 추가 가능
+    likeBtn.addEventListener('click', async () => {
+        try {
+            const likeData = await updateLikes(postId);
+            console.log(`Updated like data:`, likeData);
+            if (likeData && likeData.like !== undefined && likeData.like !== null) {
+                likeCountElement.textContent = likeData.like.toString();
+            }
+        } catch (error) {
+            console.error('좋아요 업데이트 중 오류:', error);
+        }
     });
 }
 
@@ -281,25 +275,24 @@ const init = async () => {
                 ? `${getServerUrl()}${DEFAULT_PROFILE_IMAGE}`
                 : `${getServerUrl()}${data.data.profileImagePath}`;
 
-        prependChild(document.body, Header('커뮤니티', 2, profileImage));
+        prependChild(document.body, Header('모숲이', 2, profileImage));
 
         const pageId = getQueryString('id');
-
         const pageData = await getBoardDetail(pageId);
         if (parseInt(pageData.user_id, 10) === parseInt(myInfo.userId, 10)) {
             setBoardModify(pageData, myInfo);
         }
         setBoardDetail(pageData);
 
-        getBoardComment(pageId).then(data => setBoardComment(data, myInfo));
+        const comments = await getBoardComment(pageId);
+        setBoardComment(comments, myInfo);
 
-        const likeCount = pageData.like || 0; // 서버에서 가져온 like 수
-        setupLikeButton(likeCount);
-        initLikeButton(pageId);
+        const likeData = await getAndSetLikes(pageId);
+        const likeCount = likeData.like || 0;
+        setupLikeButton(likeCount, pageId);
     } catch (error) {
         console.error(error);
     }
 };
 
 init();
-
