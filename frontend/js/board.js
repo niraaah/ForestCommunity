@@ -215,7 +215,7 @@ const handleLikeButtonClick = async postId => {
         const likeData = await updateLikes(postId);
         const likeCountElement = document.querySelector('.likeCount h3');
         if (likeData && likeData.like !== undefined && likeData.like !== null) {
-            likeCountElement.textContent = likeData.like.toString();
+            likeCountElement.textContent = likeData.like.toLocaleString();
         }
     } catch (error) {
         console.error('좋아요 버튼 클릭 처리 중 오류:', error);
@@ -234,7 +234,7 @@ function setupLikeButton(initialLikeCount, postId) {
     const likeBtn = document.getElementById('likeBtn');
     const likeCountElement = document.querySelector('.likeCount h3');
     if (initialLikeCount !== undefined && initialLikeCount !== null) {
-        likeCountElement.textContent = initialLikeCount.toString();
+        likeCountElement.textContent = initialLikeCount.toLocaleString();
     }
 
     likeBtn.addEventListener('click', async () => {
@@ -242,7 +242,7 @@ function setupLikeButton(initialLikeCount, postId) {
             const likeData = await updateLikes(postId);
             console.log(`Updated like data:`, likeData);
             if (likeData && likeData.like !== undefined && likeData.like !== null) {
-                likeCountElement.textContent = likeData.like.toString();
+                likeCountElement.textContent = likeData.like.toLocaleString();
             }
         } catch (error) {
             console.error('좋아요 업데이트 중 오류:', error);
