@@ -178,7 +178,7 @@ const updateLikes = async postId => {
         // 응답 데이터가 올바른지 확인
         if (response && typeof response === 'object' && response.status === HTTP_OK) {
             console.log('Updated like data:', response);
-            return response.data;  // 좋아요 데이터를 반환
+            return response.data.like;  // 좋아요 데이터를 반환
         } else {
             throw new Error('Invalid response format');
         }
@@ -208,7 +208,7 @@ const getAndSetLikes = async postId => {
         throw error;
     }
 };
-
+/*
 const handleLikeButtonClick = async postId => {
     try {
         console.log(`Handling like button click for postId: ${postId}`);
@@ -228,7 +228,7 @@ const initLikeButton = postId => {
     const likeButton = document.getElementById('likeBtn');
     likeButton.addEventListener('click', () => handleLikeButtonClick(postId));
 };
-
+*/
 
 function setupLikeButton(initialLikeCount, postId) {
     const likeBtn = document.getElementById('likeBtn');
@@ -288,7 +288,7 @@ const init = async () => {
         setBoardComment(comments, myInfo);
 
         const likeData = await getAndSetLikes(pageId);
-        const likeCount = likeData.like || 0;
+        const likeCount = likeData.like;
         setupLikeButton(likeCount, pageId);
     } catch (error) {
         console.error(error);

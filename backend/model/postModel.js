@@ -32,7 +32,7 @@ export const updateLikes = async (requestData) => {
         const updatePostSql = `
         UPDATE post_table
         SET \`like\` = \`like\` + 1
-        WHERE post_id = ?;
+        WHERE post_id = ${postId};
         `;
         console.log('Executing query:', updatePostSql);
         const [updatePostResults] = await connection.query(updatePostSql, [postId]);
@@ -47,7 +47,7 @@ export const updateLikes = async (requestData) => {
                 ELSE \`like\`
             END AS \`like\`
         FROM post_table
-        WHERE post_id = ?;
+        WHERE post_id = ${postId};
         `;
         console.log('Executing query:', selectLikeSql);
         const [selectLikeResult] = await connection.query(selectLikeSql, [postId]);

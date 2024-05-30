@@ -34,4 +34,8 @@ const query = async (queryString, response) => {
     }
 };
 
+export const getConnection = async () => {
+    return await pool.getConnection();
+};
+
 export { config, pool, query };

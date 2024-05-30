@@ -322,9 +322,43 @@ export const updateLike = async (req, res) => {
         console.log('Invalid userId');
         return res.status(400).json({ status: 400, message: 'invalid_user_id', data: null });
     }
-    console.log('userid와 post_id는 맞아요')
+    console.log('userid와 post_id는 맞아요');
+
     // 실제 좋아요 업데이트 로직
-    return res.status(200).json({ status: 200, message: 'Like updated successfully', data: { like : getLikes( postId ) } });
+    try {
+        const increment = 1; // 1을 더하거나 1을 빼서 좋아요를 추가/제거합니다.
+        const requestData = {
+            postId: mysql.escape(postId),
+            increment: increment,
+        };
+        await postModel.updateLikes(requestData);
+
+        const likes = await getLikesById(postId);
+
+        return res.status(200).json({ status: 200, message: 'Like updated successfully', data: { like: likes } });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ status: 500, message: 'internal_server_error', data: null });
+    }
+};
+
+// postId로 좋아요 조회 함수
+const getLikesById = async (postId) => {
+    try {
+        const requestData = {
+            postId: mysql.escape(postId),
+        };
+        const results = await postModel.getLikes(requestData);
+
+        if (!results) {
+            return null;
+        }
+
+        return results;
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
 };
 
 
