@@ -65,10 +65,10 @@ const observeData = () => {
         authData.data.profileImagePath !== changeData.profileImagePath
     ) {
         button.disabled = false;
-        button.style.backgroundColor = '#7F6AEE';
+        button.style.backgroundColor = 'rgba(85, 89, 51, 0.5)';
     } else {
         button.disabled = true;
-        button.style.backgroundColor = '#ACA0EB';
+        button.style.backgroundColor = 'rgba(193, 202, 117, 0.5)';
     }
 };
 
@@ -93,12 +93,12 @@ const changeEventHandler = async (event, uid) => {
             } else if (authData.data.nickname === value) {
                 helperElement.textContent = '';
                 button.disabled = true;
-                button.style.backgroundColor = '#ACA0EB';
+                button.style.backgroundColor = 'rgba(85, 89, 51, 0.5)';
                 return;
             } else {
                 helperElement.textContent = '*중복된 닉네임 입니다.';
                 button.disabled = true;
-                button.style.backgroundColor = '#ACA0EB';
+                button.style.backgroundColor = 'rgba(85, 89, 51, 0.5)';
                 return;
             }
         }

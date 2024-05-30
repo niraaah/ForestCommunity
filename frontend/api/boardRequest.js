@@ -59,7 +59,6 @@ export const getLikes = async postId => {
     return result;
 };
 
-
 export const updateLike = async postId => {
     try {
         const serverUrl = getServerUrl();
@@ -98,7 +97,11 @@ export const updateLike = async postId => {
         if (!result.ok) {
             const errorData = await result.json();
             console.error('Response error data:', errorData);
-            throw new Error('좋아요 업데이트 실패');
+            if (errorData.message === 'already_liked') {
+                throw new Error('이미 좋아요를 눌렀습니다.');
+            } else {
+                throw new Error('좋아요 업데이트 실패');
+            }
         }
 
         const data = await result.json();

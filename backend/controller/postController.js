@@ -311,36 +311,33 @@ export const updateLike = async (req, res) => {
     const userId = req.headers.userid;
     const postId = req.params.post_id;
 
-    console.log(`Received like update request: ${postId} ${userId}`);
-
-    if (!postId) {
-        console.log('Invalid postId');
-        return res.status(400).json({ status: 400, message: 'invalid_post_id', data: null });
+    if (!postId || !userId) {
+        return res.status(400).json({ status: 400, message: 'invalid_post_or_user_id', data: null });
     }
 
-    if (!userId) {
-        console.log('Invalid userId');
-        return res.status(400).json({ status: 400, message: 'invalid_user_id', data: null });
-    }
-    console.log('userid와 post_id는 맞아요');
-
-    // 실제 좋아요 업데이트 로직
     try {
-        const increment = 1; // 1을 더하거나 1을 빼서 좋아요를 추가/제거합니다.
         const requestData = {
             postId: mysql.escape(postId),
-            increment: increment,
+            userId: mysql.escape(userId),
         };
-        await postModel.updateLikes(requestData);
 
-        const likes = await getLikesById(postId);
+        // Check if the user has already liked the post
+        const userLiked = await postModel.checkIfUserLikedPost(userId, postId);
+        if (userLiked) {
+            return res.status(400).json({ status: 400, message: 'already_liked', data: null });
+        }
 
-        return res.status(200).json({ status: 200, message: 'Like updated successfully', data: { like: likes } });
+        const updatedLikeData = await postModel.updateLikes(requestData);
+        return res.status(200).json({ status: 200, message: 'like_updated_successfully', data: updatedLikeData });
     } catch (error) {
+        if (error.message === 'already_liked') {
+            return res.status(400).json({ status: 400, message: 'already_liked', data: null });
+        }
         console.error(error);
         return res.status(500).json({ status: 500, message: 'internal_server_error', data: null });
     }
 };
+
 
 // postId로 좋아요 조회 함수
 const getLikesById = async (postId) => {

@@ -19,48 +19,64 @@ export const getLikes = async (requestData) => {
     return results[0];
 };
 
-// 좋아요 증가
+// Check if the user has already liked the post
+export const checkIfUserLikedPost = async (userId, postId) => {
+    const sql = `
+        SELECT COUNT(*) as count
+        FROM post_likes
+        WHERE user_id = ${userId} AND post_id = ${postId};
+    `;
+    const results = await dbConnect.query(sql);
+    return results[0].count > 0;
+};
+
+// Update likes function
 export const updateLikes = async (requestData) => {
     const { postId, userId } = requestData;
-    console.log(`postModel.js updateLikes의 requestData: ${requestData}`);
+
     const connection = await dbConnect.getConnection();
 
     try {
-        console.log('Starting transaction for like update');
         await connection.beginTransaction();
 
-        const updatePostSql = `
-        UPDATE post_table
-        SET \`like\` = \`like\` + 1
-        WHERE post_id = ${postId};
+        // Check if user has already liked the post
+        const userLiked = await checkIfUserLikedPost(userId, postId);
+        if (userLiked) {
+            throw new Error('already_liked');
+        }
+
+        // Insert new like record
+        const insertLikeSql = `
+            INSERT INTO post_likes (user_id, post_id)
+            VALUES (${userId}, ${postId});
         `;
-        console.log('Executing query:', updatePostSql);
-        const [updatePostResults] = await connection.query(updatePostSql, [postId]);
-        if (updatePostResults.affectedRows === 0) throw new Error('Failed to update likes');
-        console.log('Like update results:', updatePostResults);
+        await connection.query(insertLikeSql);
+
+        // Update like count in the post_table
+        const updatePostSql = `
+            UPDATE post_table
+            SET \`like\` = \`like\` + 1
+            WHERE post_id = ${postId};
+        `;
+        await connection.query(updatePostSql);
 
         const selectLikeSql = `
-        SELECT 
-            CASE
-                WHEN \`like\` >= 1000000 THEN CONCAT(ROUND(\`like\` / 1000000, 1), 'M')
-                WHEN \`like\` >= 1000 THEN CONCAT(ROUND(\`like\` / 1000, 1), 'K')
-                ELSE \`like\`
-            END AS \`like\`
-        FROM post_table
-        WHERE post_id = ${postId};
+            SELECT 
+                CASE
+                    WHEN \`like\` >= 1000000 THEN CONCAT(ROUND(\`like\` / 1000000, 1), 'M')
+                    WHEN \`like\` >= 1000 THEN CONCAT(ROUND(\`like\` / 1000, 1), 'K')
+                    ELSE \`like\`
+                END AS \`like\`
+            FROM post_table
+            WHERE post_id = ${postId};
         `;
-        console.log('Executing query:', selectLikeSql);
-        const [selectLikeResult] = await connection.query(selectLikeSql, [postId]);
-        if (selectLikeResult.length === 0) throw new Error('Failed to select likes');
-        console.log('Selected like results:', selectLikeResult);
+        const [selectLikeResult] = await connection.query(selectLikeSql);
 
         await connection.commit();
-        console.log('Transaction committed successfully');
         return selectLikeResult[0];
     } catch (error) {
         await connection.rollback();
-        console.error('Error in updateLikes transaction:', error);
-        return null;
+        throw error;
     } finally {
         connection.release();
     }

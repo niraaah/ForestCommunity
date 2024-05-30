@@ -10,6 +10,7 @@ import {
     createPost,
     fileUpload,
     updatePost,
+    getBoardItem, // Import the function here
 } from '../api/board-writeRequest.js';
 
 const HTTP_OK = 200;

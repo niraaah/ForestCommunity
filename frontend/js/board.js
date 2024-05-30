@@ -239,16 +239,19 @@ function setupLikeButton(initialLikeCount, postId) {
 
     likeBtn.addEventListener('click', async () => {
         try {
-            const likeData = await updateLikes(postId);
-            console.log(`Updated like data:`, likeData);
+            const response = await updateLike(postId);
+            const likeData = response.data;
+
             if (likeData && likeData.like !== undefined && likeData.like !== null) {
                 likeCountElement.textContent = likeData.like.toLocaleString();
             }
         } catch (error) {
             console.error('좋아요 업데이트 중 오류:', error);
+            Dialog('좋아요 실패', error.message);
         }
     });
 }
+
 
 const init = async () => {
     try {
