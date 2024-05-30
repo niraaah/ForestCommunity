@@ -68,6 +68,7 @@ const addInfinityScrollEvent = () => {
             isProcessing = true;
 
             try {
+                offset += ITEMS_PER_LOAD;
                 const newItems = await getBoardItem(offset, ITEMS_PER_LOAD, currentSortBy);
                 if (!newItems || newItems.length === 0) {
                     isEnd = true;
