@@ -20,6 +20,11 @@ router.post('/posts/:post_id/likes', isLoggedIn, (req, res, next) => {
     next();
 }, postController.updateLike);
 
+router.delete('/posts/:post_id/likes', isLoggedIn, (req, res, next) => {
+    console.log(`DELETE /posts/${req.params.post_id}/likes`);
+    next();
+}, postController.dislikePost);
+
 router.get('/posts/:post_id/likes', isLoggedIn, (req, res, next) => {
     console.log(`GET /posts/${req.params.post_id}/likes`);
     next();

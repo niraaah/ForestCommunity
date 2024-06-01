@@ -14,26 +14,25 @@
 * {
     margin: 0;
     padding: 0;
-
     text-decoration: none;
     box-sizing: border-box;
     font-family: 'Ssukssuk';
 }
+
 body {
+    width: 100%;
     position: relative;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin: 0 calc(50vw - 212.5px); /* 약 290px */
-    border: 0px solid rgba(140, 255, 0, 0);
+    margin: 0 auto;
     background-color: #232323;
-    /* overflow: hidden; */
 }
 
 .wrap {
-    width: 100%;
-    height: 100%;
+    width: 50%;
+    margin: 0 auto; /* 가운데 정렬 */
     padding-top: 30px;
     display: flex;
     flex-direction: column;
@@ -41,24 +40,21 @@ body {
     justify-content: center-top;
     background-color: rgba(169, 179, 136, 0.95);
     border-radius: 30px;
-    opacity: 100%; 
-    transform: translateY(-100%); 
+    opacity: 100%;
+    transform: translateY(-100%);
     animation: slideDown 0.5s forwards;
 }
 
 @keyframes slideDown {
     0% {
         transform: translateY(-100%);
-        box-shadow: 0 0 0px 0px rgba(0, 0, 0, 0); /* 초기 그림자 설정 */
+        box-shadow: 0 0 0px 0px rgba(0, 0, 0, 0);
     }
     100% {
         transform: translateY(0);
-        box-shadow: 
-            -10px 0 20px -10px rgba(0, 0, 0, 0.5), /* 왼쪽 그림자 */
-            10px 0 20px -10px rgba(0, 0, 0, 0.5); /* 오른쪽 그림자 */
+        box-shadow: -10px 0 20px -10px rgba(0, 0, 0, 0.5), 10px 0 20px -10px rgba(0, 0, 0, 0.5);
     }
 }
-
 
 .background {
     position: fixed;
@@ -69,9 +65,9 @@ body {
     z-index: -1;
     background: url('/public/background/wood-final.png');
     background-repeat: no-repeat;
-    background-size: cover; /* 이미지가 화면을 덮으면서 비율을 유지하도록 변경 */
-    background-position: center; /* 이미지를 화면 중앙에 위치 */
-    background-attachment: fixed; /* 스크롤해도 이미지가 고정되도록 설정 */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
 }
 
 .background::before {
@@ -81,10 +77,37 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    /*background: rgba(0, 0, 0, 0.5);*/
 }
+
 .Ssukssuk-regular {
     font-family: "Ssukssuk", sans-serif;
     font-weight: 400;
     font-style: normal;
+}
+
+/* 미디어 쿼리 추가 */
+@media (max-width: 1200px) {
+    body {
+        margin: 0 20px;
+    }
+    .wrap {
+        width: 80%;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        margin: 0 10px;
+    }
+    .wrap {
+        width: 40%;
+        padding-top: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .wrap {
+        width: 20%;
+        padding-top: 10px;
+    }
 }

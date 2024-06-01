@@ -1,14 +1,13 @@
 .boardItem {
     display: flex;
     flex-direction: column;
-    width: 100%;
-
+    width: 100%; /* 화면의 2/3 너비에서 공백을 제외한 크기 */
+    margin: 10px auto; /* 가운데 정렬과 위아래 마진 */
     padding: 16px 0;
-    margin-bottom: 0px; /* 아이템 간격을 위한 마진 */
     border: 0.5px solid rgba(241, 241, 243, 0.3);
     border-radius: 30px;
     background-color: rgba(136, 142, 84, 0.95);
-    transform: translateY(-100%); 
+    transform: translateY(-100%);
     animation: slideDown 0.5s forwards;
     cursor: pointer;
 }
@@ -16,6 +15,7 @@
 .boardItem:last-child {
     margin-bottom: 0; /* 마지막 아이템에 대한 마진 제거 */
 }
+
 @keyframes slideDown {
     0% {
         transform: translateY(-100%);
@@ -31,7 +31,6 @@
 
 .boardItem .date {
     align-self: flex-end;
-
     font-size: 12px;
     line-height: 17px;
     margin-left: 60px;
@@ -44,10 +43,8 @@
     font-size: 24px;
     font-weight: bold;
     line-height: 32px;
-
     color: #ffffff;
     letter-spacing: -0.02em;
-
     margin-bottom: 24px;
     padding: 0 20px;
 }
@@ -59,7 +56,7 @@
     column-gap: 16px;
     padding-bottom: 16px;
     padding-left: 20px;
-    border-bottom: 1px solid rgb(176, 176, 176, 0.5);
+    border-bottom: 1px solid rgba(176, 176, 176, 0.5);
 }
 
 .boardItem .info h3,
@@ -68,7 +65,6 @@
     font-weight: 200;
     line-height: 17px;
     letter-spacing: -0.02em;
-
     color: rgb(255, 255, 255);
 }
 
@@ -84,7 +80,6 @@
 .boardItem .img {
     width: 32px;
     height: 32px;
-
     border-radius: 50%;
     overflow: hidden;
 }
@@ -92,7 +87,6 @@
 .boardItem .img img {
     width: 100%;
     height: 100%;
-
     object-fit: cover;
 }
 
@@ -100,6 +94,25 @@
     font-size: 14px;
     line-height: 22px;
     letter-spacing: -0.02em;
-
     color: rgb(242, 255, 142);
+}
+
+/* 미디어 쿼리 추가 */
+@media (max-width: 1200px) {
+    .boardItem {
+        width: calc(90% - 20px); /* 작은 화면에서도 공백을 줄인다 */
+    }
+}
+
+@media (max-width: 768px) {
+    .boardItem {
+        width: calc(100% - 20px); /* 더 작은 화면에서는 공백을 더 줄인다 */
+    }
+}
+
+@media (max-width: 480px) {
+    .boardItem {
+        width: calc(100% - 10px); /* 가장 작은 화면에서는 거의 전체 너비 사용 */
+        margin: 5px auto; /* 세로 방향 공백을 최소화 */
+    }
 }

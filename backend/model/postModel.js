@@ -348,3 +348,53 @@ export const softDeletePost = async (requestData, response) => {
 
     return results;
 };
+export const removeLike = async (requestData) => {
+    const { postId, userId } = requestData;
+
+    const connection = await dbConnect.getConnection();
+
+    try {
+        await connection.beginTransaction();
+
+        // Check if user has already liked the post
+        const userLiked = await checkIfUserLikedPost(userId, postId);
+        if (!userLiked) {
+            throw new Error('not_liked_yet');
+        }
+
+        // Remove like record
+        const deleteLikeSql = `
+            DELETE FROM post_likes
+            WHERE user_id = ${userId} AND post_id = ${postId};
+        `;
+        await connection.query(deleteLikeSql);
+
+        // Update like count in the post_table
+        const updatePostSql = `
+            UPDATE post_table
+            SET \`like\` = \`like\` - 1
+            WHERE post_id = ${postId};
+        `;
+        await connection.query(updatePostSql);
+
+        const selectLikeSql = `
+            SELECT 
+                CASE
+                    WHEN \`like\` >= 1000000 THEN CONCAT(ROUND(\`like\` / 1000000, 1), 'M')
+                    WHEN \`like\` >= 1000 THEN CONCAT(ROUND(\`like\` / 1000, 1), 'K')
+                    ELSE \`like\`
+                END AS \`like\`
+            FROM post_table
+            WHERE post_id = ${postId};
+        `;
+        const [selectLikeResult] = await connection.query(selectLikeSql);
+
+        await connection.commit();
+        return selectLikeResult[0];
+    } catch (error) {
+        await connection.rollback();
+        throw error;
+    } finally {
+        connection.release();
+    }
+};

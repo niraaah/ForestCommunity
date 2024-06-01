@@ -66,8 +66,6 @@ const setBoardDetail = data => {
     contentElement.textContent = data.post_content;
 
     const viewCountElement = document.querySelector('.viewCount h3');
-    // hits에 K, M 이 포함되어 있을 경우 그냥 출력
-    // 포함되어 있지 않다면 + 1
     if (data.hits.includes('K') || data.hits.includes('M')) {
         viewCountElement.textContent = data.hits;
     } else {
@@ -169,25 +167,6 @@ const inputComment = async () => {
     }
 };
 
-const updateLikes = async postId => {
-    try {
-        console.log(`Updating likes for postId: ${postId}`);
-        const response = await updateLike(postId);
-        console.log(`Response data:`, response);
-
-        // 응답 데이터가 올바른지 확인
-        if (response && typeof response === 'object' && response.status === HTTP_OK) {
-            console.log('Updated like data:', response);
-            return response.data.like;  // 좋아요 데이터를 반환
-        } else {
-            throw new Error('Invalid response format');
-        }
-    } catch (error) {
-        console.error('좋아요 업데이트 중 오류:', error);
-        throw error;
-    }
-};
-
 const getAndSetLikes = async postId => {
     try {
         console.log(`Getting likes for postId: ${postId}`);
@@ -208,27 +187,6 @@ const getAndSetLikes = async postId => {
         throw error;
     }
 };
-/*
-const handleLikeButtonClick = async postId => {
-    try {
-        console.log(`Handling like button click for postId: ${postId}`);
-        const likeData = await updateLikes(postId);
-        const likeCountElement = document.querySelector('.likeCount h3');
-        if (likeData && likeData.like !== undefined && likeData.like !== null) {
-            likeCountElement.textContent = likeData.like.toLocaleString();
-        }
-    } catch (error) {
-        console.error('좋아요 버튼 클릭 처리 중 오류:', error);
-        Dialog('좋아요 실패', '좋아요를 처리하는데 실패하였습니다.');
-    }
-};
-
-
-const initLikeButton = postId => {
-    const likeButton = document.getElementById('likeBtn');
-    likeButton.addEventListener('click', () => handleLikeButtonClick(postId));
-};
-*/
 
 function setupLikeButton(initialLikeCount, postId) {
     const likeBtn = document.getElementById('likeBtn');
@@ -262,9 +220,7 @@ const init = async () => {
 
         const myInfo = myInfoResult.data;
         const commentBtnElement = document.querySelector('.commentInputBtn');
-        const textareaElement = document.querySelector(
-            '.commentInputWrap textarea',
-        );
+        const textareaElement = document.querySelector('.commentInputWrap textarea');
         textareaElement.addEventListener('input', inputComment);
         commentBtnElement.addEventListener('click', addComment);
         commentBtnElement.disabled = true;
@@ -273,12 +229,11 @@ const init = async () => {
         if (data.status === HTTP_NOT_AUTHORIZED) {
             window.location.href = '/html/login.html';
         }
-        const profileImage =
-            data.data.profileImagePath === undefined
-                ? `${getServerUrl()}${DEFAULT_PROFILE_IMAGE}`
-                : `${getServerUrl()}${data.data.profileImagePath}`;
+        const profileImage = data.data.profileImagePath === undefined
+            ? `${getServerUrl()}${DEFAULT_PROFILE_IMAGE}`
+            : `${getServerUrl()}${data.data.profileImagePath}`;
 
-        prependChild(document.body, Header('모숲이', 2, profileImage));
+        prependChild(document.body, Header('모두의 숲속 이야기', 2, profileImage));
 
         const pageId = getQueryString('id');
         const pageData = await getBoardDetail(pageId);
@@ -290,6 +245,7 @@ const init = async () => {
         const comments = await getBoardComment(pageId);
         setBoardComment(comments, myInfo);
 
+        
         const likeData = await getAndSetLikes(pageId);
         const likeCount = likeData.like;
         setupLikeButton(likeCount, pageId);

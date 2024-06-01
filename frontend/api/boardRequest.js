@@ -47,7 +47,7 @@ export const getComments = async postId => {
 };
 
 export const getLikes = async postId => {
-    console.log(`GET `)
+    console.log(`GET `);
     const result = await fetch(`${getServerUrl()}/posts/${postId}/likes`, {
         method: 'GET',
         headers: {
@@ -65,7 +65,6 @@ export const updateLike = async postId => {
         const session = getCookie('session');
         const userId = getCookie('userId');
 
-        // 디버깅 로그 추가
         console.log(`getCookie('session'): ${session}`);
         console.log(`getCookie('userId'): ${userId}`);
         console.log(`postId: ${postId}`);
@@ -82,7 +81,7 @@ export const updateLike = async postId => {
         console.log(`Request URL: ${serverUrl}/posts/${postId}/likes`);
         console.log(`Session: ${session}, User ID: ${userId}`);
 
-        const result = await fetch(`${serverUrl}/posts/${postId}/likes`, {
+        let result = await fetch(`${serverUrl}/posts/${postId}/likes`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -92,13 +91,27 @@ export const updateLike = async postId => {
             body: JSON.stringify({ postId }),
         });
 
-        console.log(`Response status: ${result.status}`);
-        console.log(`result.ok =${result.ok}`);
         if (!result.ok) {
             const errorData = await result.json();
             console.error('Response error data:', errorData);
             if (errorData.message === 'already_liked') {
-                throw new Error('이미 좋아요를 눌렀습니다.');
+                // 좋아요 취소 요청을 보냄
+                console.log('좋아요를 취소합니다.');
+                result = await fetch(`${serverUrl}/posts/${postId}/likes`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'session': session,
+                        'userId': userId,
+                    },
+                });
+
+                if (!result.ok) {
+                    throw new Error('좋아요 취소 실패');
+                }
+
+                const unlikeData = await result.json();
+                return unlikeData;
             } else {
                 throw new Error('좋아요 업데이트 실패');
             }

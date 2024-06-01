@@ -157,6 +157,10 @@
     cursor: pointer;
 }
 
+#likeBtn.liked {
+    color: red; /* 좋아요가 눌린 상태일 때 버튼 색상 */
+}
+
 .commentWrap {
     display: flex;
     flex-direction: row;

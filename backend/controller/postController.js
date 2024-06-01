@@ -307,6 +307,7 @@ export const softDeletePost = async (request, response) => {
 };
 
 
+
 export const updateLike = async (req, res) => {
     const userId = req.headers.userid;
     const postId = req.params.post_id;
@@ -330,9 +331,34 @@ export const updateLike = async (req, res) => {
         const updatedLikeData = await postModel.updateLikes(requestData);
         return res.status(200).json({ status: 200, message: 'like_updated_successfully', data: updatedLikeData });
     } catch (error) {
-        if (error.message === 'already_liked') {
-            return res.status(400).json({ status: 400, message: 'already_liked', data: null });
+        console.error(error);
+        return res.status(500).json({ status: 500, message: 'internal_server_error', data: null });
+    }
+};
+
+export const dislikePost = async (req, res) => {
+    const userId = req.headers.userid;
+    const postId = req.params.post_id;
+
+    if (!postId || !userId) {
+        return res.status(400).json({ status: 400, message: 'invalid_post_or_user_id', data: null });
+    }
+
+    try {
+        const requestData = {
+            postId: mysql.escape(postId),
+            userId: mysql.escape(userId),
+        };
+
+        // Check if the user has liked the post
+        const userLiked = await postModel.checkIfUserLikedPost(userId, postId);
+        if (!userLiked) {
+            return res.status(400).json({ status: 400, message: 'not_liked_yet', data: null });
         }
+
+        const updatedLikeData = await postModel.removeLike(requestData);
+        return res.status(200).json({ status: 200, message: 'like_removed_successfully', data: updatedLikeData });
+    } catch (error) {
         console.error(error);
         return res.status(500).json({ status: 500, message: 'internal_server_error', data: null });
     }
