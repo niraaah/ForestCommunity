@@ -8,7 +8,7 @@ const DEFAULT_PROFILE_IMAGE = '/public/image/profile/default.jpg';
 const HTTP_NOT_AUTHORIZED = 401;
 const SCROLL_THRESHOLD = 0.9;
 const INITIAL_OFFSET = 0;
-const ITEMS_PER_LOAD = 5;
+const ITEMS_PER_LOAD = 10;
 
 let currentSortBy = 'dateDesc'; // Default sort by date descending
 let offset = INITIAL_OFFSET;
@@ -99,7 +99,7 @@ const init = async () => {
         const fullProfileImagePath = `${getServerUrl()}${profileImagePath}`;
         prependChild(
             document.body,
-            Header('모두의 숲속 이야기', 0, fullProfileImagePath),
+            Header('모두의 숲속 이야기🌿', 0, fullProfileImagePath),
         );
 
         const boardList = await getBoardItem(0, ITEMS_PER_LOAD, currentSortBy);

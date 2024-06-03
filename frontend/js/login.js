@@ -127,10 +127,9 @@ const lottieAnimation = type => {
 const init = async () => {
     await authCheckReverse();
     observeSignupData();
-    prependChild(document.body, Header('커뮤니티', 0));
+    prependChild(document.body, Header('모두의 숲속 이야기 🐰🌿🐻🌱', 0));
     eventSet();
     localStorage.clear();
     document.cookie = '';
 };
-
 init();

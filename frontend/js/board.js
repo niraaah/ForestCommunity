@@ -233,7 +233,7 @@ const init = async () => {
             ? `${getServerUrl()}${DEFAULT_PROFILE_IMAGE}`
             : `${getServerUrl()}${data.data.profileImagePath}`;
 
-        prependChild(document.body, Header('모두의 숲속 이야기', 2, profileImage));
+        prependChild(document.body, Header('모두의 숲속 이야기🌿', 2, profileImage));
 
         const pageId = getQueryString('id');
         const pageData = await getBoardDetail(pageId);

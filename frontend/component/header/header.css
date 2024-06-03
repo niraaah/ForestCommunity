@@ -41,10 +41,6 @@ header .profile img {
     cursor: pointer;
 }
 
-header:hover {
-    width: 200px;
-}
-
 header .drop {
     position: absolute;
     top: 30%;

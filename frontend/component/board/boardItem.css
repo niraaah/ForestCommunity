@@ -1,6 +1,6 @@
 .boardItem {
     display: flex;
-    flex-direction: column;
+    flex-wrap:wrap;
     width: 100%; /* 화면의 2/3 너비에서 공백을 제외한 크기 */
     margin: 10px auto; /* 가운데 정렬과 위아래 마진 */
     padding: 16px 0;
@@ -43,6 +43,7 @@
     font-size: 24px;
     font-weight: bold;
     line-height: 32px;
+    justify-content: center;
     color: #ffffff;
     letter-spacing: -0.02em;
     margin-bottom: 24px;
